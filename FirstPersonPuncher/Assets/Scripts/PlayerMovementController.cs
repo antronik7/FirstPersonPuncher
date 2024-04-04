@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMovementController : MonoBehaviour
 {
+    [SerializeField] Transform characterOrientation;
     [SerializeField] float movementSpeed = 1f;
 
     private Rigidbody rb;
@@ -20,10 +21,11 @@ public class PlayerMovementController : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 movementDirection = new Vector3(horizontal, rb.velocity.y, vertical);
+        Vector3 movementDirection = characterOrientation.forward * vertical + characterOrientation.right * horizontal;
         movementDirection = Vector3.ClampMagnitude(movementDirection, 1f);
         Vector3 movementVelocity = movementDirection * movementSpeed;
+        Vector3 totalVelocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
 
-        rb.velocity = movementVelocity;
+        rb.velocity = totalVelocity;
     }
 }

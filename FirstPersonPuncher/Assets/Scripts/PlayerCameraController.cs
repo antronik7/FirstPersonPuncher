@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class PlayerCameraController : MonoBehaviour
 {
+    [SerializeField] Transform characterOrientation;
     [SerializeField] Transform fpsCamera;
-    [SerializeField] float mouseHorizontalSensitivity = 100;
-    [SerializeField] float mouseVerticalSensitivity = 100;
+    [SerializeField] float mouseHorizontalSensitivity = 1;
+    [SerializeField] float mouseVerticalSensitivity = 1;
     [SerializeField] int maxUpAngle = 90;
     [SerializeField] int maxDownAngle = -90;
 
@@ -22,15 +23,15 @@ public class PlayerCameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, maxDownAngle, maxUpAngle);
 
         yRotation += mouseX;
 
-        transform.rotation = Quaternion.Euler(0f, yRotation, 0f);
-        fpsCamera.rotation = Quaternion.Euler(xRotation, 0f, 0f);
+        characterOrientation.localRotation = Quaternion.Euler(0f, yRotation, 0f);
+        fpsCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 }
