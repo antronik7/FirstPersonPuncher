@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class JumpController : MonoBehaviour
 {
-    [SerializeField] float jumpForce = 5f;
+    [SerializeField] float jumpHeight = 5f;
     [SerializeField] float groundCheckDistance = 0.1f;
     [SerializeField] float coyoteTime = 0.2f;
     [SerializeField] int inAirJump = 1;
@@ -48,20 +48,21 @@ public class JumpController : MonoBehaviour
 
     private void Jump()
     {
-        yVelocity = jumpForce;
+        yVelocity = Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight);
     }
 
     private void CheckGround()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, col.bounds.extents.y + groundCheckDistance);
+        RaycastHit hit;
+        isGrounded = Physics.SphereCast(transform.position, col.radius, Vector3.down, out hit, ((col.height / 2f) - col.radius) + groundCheckDistance);
     }
 
     private void ApplyGravity()
     {
+        yVelocity += Physics.gravity.y * Time.deltaTime;
+
         if (isGrounded && yVelocity < 0f)
             yVelocity = 0f;
-        else
-            yVelocity += Physics.gravity.y * Time.deltaTime;
 
         rb.velocity = new Vector3(rb.velocity.x, yVelocity, rb.velocity.z);
     }
