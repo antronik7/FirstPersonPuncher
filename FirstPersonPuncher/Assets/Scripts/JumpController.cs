@@ -12,6 +12,8 @@ public class JumpController : MonoBehaviour
     private Rigidbody rb;
     private CapsuleCollider col;
 
+    private bool isGrounded = false;
+    private float yVelocity = 0f;
     private float coyoteTimeCounter = 0;
     private int inAirJumpCounter = 0;
 
@@ -25,7 +27,8 @@ public class JumpController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool grounded = isGrounded();
+        CheckGround();
+        ApplyGravity();
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -40,7 +43,32 @@ public class JumpController : MonoBehaviour
             }
         }
 
-        if (grounded)
+        CheckCoyoteTime();
+    }
+
+    private void Jump()
+    {
+        yVelocity = jumpForce;
+    }
+
+    private void CheckGround()
+    {
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, col.bounds.extents.y + groundCheckDistance);
+    }
+
+    private void ApplyGravity()
+    {
+        if (isGrounded && yVelocity < 0f)
+            yVelocity = 0f;
+        else
+            yVelocity += Physics.gravity.y * Time.deltaTime;
+
+        rb.velocity = new Vector3(rb.velocity.x, yVelocity, rb.velocity.z);
+    }
+
+    private void CheckCoyoteTime()
+    {
+        if (isGrounded)
         {
             coyoteTimeCounter = coyoteTime;
             inAirJumpCounter = inAirJump;
@@ -49,17 +77,6 @@ public class JumpController : MonoBehaviour
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
-    }
-
-    private void Jump()
-    {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    }
-
-    private bool isGrounded()
-    {
-        return Physics.Raycast(transform.position, Vector3.down, col.bounds.extents.y + groundCheckDistance);
     }
 }
 
