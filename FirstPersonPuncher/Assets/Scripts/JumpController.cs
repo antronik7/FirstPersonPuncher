@@ -8,6 +8,7 @@ public class JumpController : MonoBehaviour
     [SerializeField] float groundCheckDistance = 0.1f;
     [SerializeField] float coyoteTime = 0.2f;
     [SerializeField] int inAirJump = 1;
+    [SerializeField] int maxSlopeAngle = 60;
 
     private Rigidbody rb;
     private CapsuleCollider col;
@@ -16,6 +17,7 @@ public class JumpController : MonoBehaviour
     private float yVelocity = 0f;
     private float coyoteTimeCounter = 0;
     private int inAirJumpCounter = 0;
+    private float groundAngle = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -55,13 +57,21 @@ public class JumpController : MonoBehaviour
     {
         RaycastHit hit;
         isGrounded = Physics.SphereCast(transform.position, col.radius, Vector3.down, out hit, ((col.height / 2f) - col.radius) + groundCheckDistance);
+
+        if(isGrounded)
+            groundAngle = Vector3.Angle(hit.normal, Vector3.up);
+        else
+            groundAngle = 0f;
+
+        if (groundAngle > maxSlopeAngle)
+            isGrounded = false;
     }
 
     private void ApplyGravity()
     {
         yVelocity += Physics.gravity.y * Time.deltaTime;
 
-        if (isGrounded && yVelocity < 0f)
+        if (isGrounded && yVelocity < 0f && !(groundAngle > maxSlopeAngle))
             yVelocity = 0f;
 
         rb.velocity = new Vector3(rb.velocity.x, yVelocity, rb.velocity.z);
