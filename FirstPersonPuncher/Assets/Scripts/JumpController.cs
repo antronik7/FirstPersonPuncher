@@ -9,6 +9,7 @@ public class JumpController : MonoBehaviour
     [SerializeField] float coyoteTime = 0.2f;
     [SerializeField] int inAirJump = 1;
     [SerializeField] int maxSlopeAngle = 60;
+    [SerializeField] float gravityScale = 1f;
 
     private Rigidbody rb;
     private CapsuleCollider col;
@@ -50,7 +51,7 @@ public class JumpController : MonoBehaviour
 
     private void Jump()
     {
-        yVelocity = Mathf.Sqrt(-2.0f * Physics2D.gravity.y * jumpHeight);
+        yVelocity = Mathf.Sqrt(-2.0f * Physics2D.gravity.y * gravityScale * jumpHeight);
     }
 
     private void CheckGround()
@@ -69,7 +70,7 @@ public class JumpController : MonoBehaviour
 
     private void ApplyGravity()
     {
-        yVelocity += Physics.gravity.y * Time.deltaTime;
+        yVelocity += Physics.gravity.y * gravityScale * Time.deltaTime;
 
         if (isGrounded && yVelocity < 0f && !(groundAngle > maxSlopeAngle))
             yVelocity = 0f;
