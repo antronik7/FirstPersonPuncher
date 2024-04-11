@@ -8,15 +8,16 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] float movementSpeed = 1f;
 
     private Rigidbody rb;
+    private JumpController jumpController;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        jumpController = GetComponent<JumpController>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
@@ -24,8 +25,12 @@ public class PlayerMovementController : MonoBehaviour
         Vector3 movementDirection = characterOrientation.forward * vertical + characterOrientation.right * horizontal;
         movementDirection = Vector3.ClampMagnitude(movementDirection, 1f);
         Vector3 movementVelocity = movementDirection * movementSpeed;
-        Vector3 totalVelocity = new Vector3(movementVelocity.x, rb.velocity.y, movementVelocity.z);
 
-        rb.velocity = totalVelocity;
+        if (jumpController.getIsGrounded() && jumpController.getGroundAngle() > 0f)
+            movementVelocity = Quaternion.FromToRotation(Vector3.up, jumpController.getGroundNormal()) * movementVelocity;
+
+        movementVelocity.y += jumpController.getYVelocity();
+
+        rb.velocity = movementVelocity;
     }
 }

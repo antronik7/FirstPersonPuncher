@@ -15,10 +15,11 @@ public class JumpController : MonoBehaviour
     private CapsuleCollider col;
 
     private bool isGrounded = false;
+    private float groundAngle = 0f;
+    private Vector3 groundNormal = Vector3.up;
     private float yVelocity = 0f;
     private float coyoteTimeCounter = 0;
     private int inAirJumpCounter = 0;
-    private float groundAngle = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -60,9 +61,15 @@ public class JumpController : MonoBehaviour
         isGrounded = Physics.SphereCast(transform.position, col.radius, Vector3.down, out hit, ((col.height / 2f) - col.radius) + groundCheckDistance);
 
         if(isGrounded)
-            groundAngle = Vector3.Angle(hit.normal, Vector3.up);
+        {
+            groundNormal = hit.normal;
+            groundAngle = Vector3.Angle(groundNormal, Vector3.up);
+        }
         else
+        {
+            groundNormal = Vector3.up;
             groundAngle = 0f;
+        }
 
         if (groundAngle > maxSlopeAngle)
             isGrounded = false;
@@ -89,6 +96,26 @@ public class JumpController : MonoBehaviour
         {
             coyoteTimeCounter -= Time.deltaTime;
         }
+    }
+
+    public float getYVelocity()
+    {
+        return yVelocity;
+    }
+
+    public bool getIsGrounded()
+    {
+        return isGrounded;
+    }
+
+    public float getGroundAngle()
+    {
+        return groundAngle;
+    }
+
+    public Vector3 getGroundNormal()
+    {
+        return groundNormal;
     }
 }
 
