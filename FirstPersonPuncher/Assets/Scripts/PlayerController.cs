@@ -41,8 +41,6 @@ public class PlayerController : MonoBehaviour
     {
         CheckForInputs();
         RotateCamera();
-
-        Move();
     }
 
     void LateUpdate()
@@ -52,7 +50,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Move();
+        Move();
     }
 
     private void CheckForInputs()
