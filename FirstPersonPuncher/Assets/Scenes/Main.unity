@@ -4745,6 +4745,8 @@ MonoBehaviour:
   mouseVerticalSensitivity: 1
   cameraMaxUpAngle: 90
   cameraMaxDownAngle: -90
+  jumpForce: 5
+  gravityScale: 1
   characterOrientation: {fileID: 1416970595}
   isGrounded: 0
 --- !u!54 &1946273599
@@ -4773,7 +4775,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!136 &1946273600
 CapsuleCollider:
   m_ObjectHideFlags: 0
