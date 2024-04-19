@@ -13,20 +13,25 @@ public class PlayerController : MonoBehaviour
     [SerializeField] int cameraMaxUpAngle = 90;
     [SerializeField] int cameraMaxDownAngle = -90;
 
-    //Instances
+    //References
+    [Header("References")]
+    [SerializeField] Transform characterOrientation;
 
     //Components
+    private CapsuleCollider col;
     private Rigidbody rb;
 
     //Variables
     private Vector2 moveStickValues = Vector2.zero;
     private float xRotationCamera = 0f;
     private float yRotationCamera = 0f;
+    [SerializeField] private bool isGrounded = false;
 
     private void Awake()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
+        col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
     }
 
@@ -39,6 +44,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        GroundCheck();
         CheckForInputs();
         RotateCamera();
     }
@@ -61,6 +67,17 @@ public class PlayerController : MonoBehaviour
         moveStickValues = new Vector2(horizontal, vertical);
     }
 
+    private void GroundCheck()
+    {
+        RaycastHit hit;
+        Physics.SphereCast(transform.position + (Vector3.up * (col.height/2f)), col.radius, Vector3.down, out hit, Mathf.Infinity);
+
+        isGrounded = true;
+
+        if (hit.point.y < transform.position.y)
+            isGrounded = false;
+    }
+
     private void RotateCamera()
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
@@ -71,12 +88,13 @@ public class PlayerController : MonoBehaviour
 
         yRotationCamera += mouseX;
 
-        Camera.main.transform.localRotation = Quaternion.Euler(xRotationCamera, yRotationCamera, 0f);
+        characterOrientation.localRotation = Quaternion.Euler(0f, yRotationCamera, 0f);
+        Camera.main.transform.localRotation = Quaternion.Euler(xRotationCamera, 0f, 0f);
     }
 
     private void Move()
     {
-        Vector3 movementDirection = transform.forward * moveStickValues.y + transform.right * moveStickValues.x;
+        Vector3 movementDirection = characterOrientation.forward * moveStickValues.y + characterOrientation.right * moveStickValues.x;
         movementDirection = Vector3.ClampMagnitude(movementDirection, 1f);
         Vector3 movementVelocity = movementDirection * movementSpeed;
         rb.velocity = movementVelocity;

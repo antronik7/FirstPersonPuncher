@@ -3496,6 +3496,38 @@ Transform:
   m_Children: []
   m_Father: {fileID: 990475029}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &1416970594
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1416970595}
+  m_Layer: 0
+  m_Name: CharacterOrientation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1416970595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416970594}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1541548471}
+  m_Father: {fileID: 1946273601}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1445525201 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 21ef9e624b548ae47ab96db680a39388, type: 3}
@@ -3849,13 +3881,13 @@ Transform:
   m_GameObject: {fileID: 1541548470}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2015887002}
   - {fileID: 391550486}
-  m_Father: {fileID: 1946273601}
+  m_Father: {fileID: 1416970595}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!81 &1541548472
 AudioListener:
@@ -4713,6 +4745,8 @@ MonoBehaviour:
   mouseVerticalSensitivity: 1
   cameraMaxUpAngle: 90
   cameraMaxDownAngle: -90
+  characterOrientation: {fileID: 1416970595}
+  isGrounded: 0
 --- !u!54 &1946273599
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4747,7 +4781,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1946273597}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d23dc7f13bf92cd4b9c08a0cb735121a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -4777,7 +4811,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 933761882}
-  - {fileID: 1541548471}
+  - {fileID: 1416970595}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1979455322
