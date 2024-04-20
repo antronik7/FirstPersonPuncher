@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     //Values
     [Header("Movement")]
     [SerializeField] float movementSpeed = 1f;
+    [SerializeField] int maxSlopeAngle = 60;
 
     [Header("Camera")]
     [SerializeField] float mouseHorizontalSensitivity = 1;
@@ -22,6 +23,10 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField] Transform characterOrientation;
 
+    //Debug
+    [Header("Debug")]
+    [SerializeField] float currentSpeed;
+
     //Components
     private CapsuleCollider col;
     private Rigidbody rb;
@@ -33,6 +38,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isGrounded = false;
     private float yVelocity = 0f;
     private bool triggerJump = false;
+    private Vector3 groundNormal = Vector3.up;
+    private float groundAngle = 0f;
+    private Vector3 previousPosition = Vector3.zero;
 
     private void Awake()
     {
@@ -51,6 +59,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        currentSpeed = Vector3.Distance(previousPosition, transform.position) / Time.deltaTime;
+        previousPosition = transform.position;
+
         CheckForInputs();
         RotateCamera();
     }
@@ -88,6 +99,20 @@ public class PlayerController : MonoBehaviour
 
         if (hit.point.y + 0.0001f < transform.position.y)
             isGrounded = false;
+
+        if (isGrounded)
+        {
+            groundNormal = hit.normal;
+            groundAngle = Vector3.Angle(groundNormal, Vector3.up);
+        }
+        else
+        {
+            groundNormal = Vector3.up;
+            groundAngle = 0f;
+        }
+
+        if (groundAngle > maxSlopeAngle + 0.0001f)
+            isGrounded = false;
     }
 
     private void CalculateGravity()
@@ -117,6 +142,10 @@ public class PlayerController : MonoBehaviour
         Vector3 movementDirection = characterOrientation.forward * moveStickValues.y + characterOrientation.right * moveStickValues.x;
         movementDirection = Vector3.ClampMagnitude(movementDirection, 1f);
         Vector3 movementVelocity = movementDirection * movementSpeed;
+
+        if (isGrounded && groundAngle > 0f && !(yVelocity > 0f))
+            movementVelocity = Quaternion.FromToRotation(Vector3.up, groundNormal) * movementVelocity;
+
         Vector3 totalVelocity = movementVelocity + (Vector3.up * yVelocity);
         rb.velocity = totalVelocity;
     }
@@ -126,7 +155,7 @@ public class PlayerController : MonoBehaviour
         if(triggerJump)
         {
             triggerJump = false;
-            yVelocity += jumpForce;
+            yVelocity = jumpForce;
         }
     }
 }
