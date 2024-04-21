@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] float jumpForce = 1f;
+    [SerializeField] int inAirJump = 1;
     [SerializeField] float gravityScale = 1f;
 
     //References
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isGrounded = false;
     private float yVelocity = 0f;
     private bool triggerJump = false;
+    private int inAirJumpCounter = 0;
     private Vector3 groundNormal = Vector3.up;
     private float groundAngle = 0f;
     private Vector3 previousPosition = Vector3.zero;
@@ -48,6 +50,8 @@ public class PlayerController : MonoBehaviour
 
         col = GetComponent<CapsuleCollider>();
         rb = GetComponent<Rigidbody>();
+
+
     }
 
     // Start is called before the first frame update
@@ -75,6 +79,7 @@ public class PlayerController : MonoBehaviour
     {
         GroundCheck();
         CalculateGravity();
+        ResetAirJump();
         CalculateJump();
         Move();
     }
@@ -86,7 +91,7 @@ public class PlayerController : MonoBehaviour
 
         moveStickValues = new Vector2(horizontal, vertical);
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space))
             triggerJump = true;
     }
 
@@ -150,12 +155,28 @@ public class PlayerController : MonoBehaviour
         rb.velocity = totalVelocity;
     }
 
+    private void ResetAirJump()
+    {
+        if (isGrounded)
+            inAirJumpCounter = inAirJump;
+    }
+
     private void CalculateJump()
     {
         if(triggerJump)
         {
-            triggerJump = false;
-            yVelocity = jumpForce;
+            if (isGrounded || inAirJumpCounter > 0)
+            {
+                if(!isGrounded)
+                    --inAirJumpCounter;
+
+                triggerJump = false;
+                yVelocity = jumpForce;
+            }
+            else 
+            {
+                triggerJump = false;
+            }
         }
     }
 }
