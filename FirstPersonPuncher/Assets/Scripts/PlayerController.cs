@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     [SerializeField] float movementSpeed = 1f;
     [SerializeField] int maxSlopeAngle = 60;
+    [SerializeField] float maxSlopeSnapDistance = 1f;
 
     [Header("Camera")]
     [SerializeField] float mouseHorizontalSensitivity = 1;
@@ -97,8 +98,12 @@ public class PlayerController : MonoBehaviour
 
     private void GroundCheck()
     {
+        bool wasGrounded = isGrounded;
+
         RaycastHit hit;
         Physics.SphereCast(transform.position + (Vector3.up * (col.height/2f)), col.radius - 0.0001f, Vector3.down, out hit, Mathf.Infinity);
+
+        float hitNormalAngle = Vector3.Angle(hit.normal, Vector3.up);
 
         isGrounded = true;
 
@@ -108,7 +113,7 @@ public class PlayerController : MonoBehaviour
         if (isGrounded)
         {
             groundNormal = hit.normal;
-            groundAngle = Vector3.Angle(groundNormal, Vector3.up);
+            groundAngle = hitNormalAngle;
         }
         else
         {
@@ -118,6 +123,17 @@ public class PlayerController : MonoBehaviour
 
         if (groundAngle > maxSlopeAngle + 0.0001f)
             isGrounded = false;
+
+        if (wasGrounded && isGrounded == false && hitNormalAngle > 0.0001f && hitNormalAngle < maxSlopeAngle && !(yVelocity > 0f))
+        {
+            if (hit.point.y + 0.0001f > transform.position.y - maxSlopeSnapDistance)
+            {
+                transform.position = hit.point + (hit.normal * col.radius) - (Vector3.up * col.radius);
+                isGrounded = true;
+                groundNormal = hit.normal;
+                groundAngle = hitNormalAngle;
+            }
+        }
     }
 
     private void CalculateGravity()
