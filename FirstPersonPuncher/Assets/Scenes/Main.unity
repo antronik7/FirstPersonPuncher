@@ -4833,9 +4833,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba62e04ff75578947a0258c0990a9148, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  punchSpeed: 0.2
-  punchCooldown: 0.5
-  punchPosition: {x: -0.5, y: -0.3, z: 1}
+  punchSpeed: 0.05
+  punchImpactDuration: 0.1
+  punchCooldown: 0.15
+  rightFinalPunchPosition: {x: 0.5, y: -0.3, z: 1}
+  leftFinalPunchPosition: {x: -0.5, y: -0.3, z: 1}
   leftFist: {fileID: 391550486}
   rightFist: {fileID: 2015887002}
 --- !u!1 &1979455322

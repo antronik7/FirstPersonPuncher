@@ -7,8 +7,10 @@ public class FistsController : MonoBehaviour
     //Values
     [Header("Punch")]
     [SerializeField] float punchSpeed = 0.2f;
+    [SerializeField] float punchImpactDuration = 0.2f;
     [SerializeField] float punchCooldown = 0.5f;
-    [SerializeField] Vector3 punchPosition = Vector3.zero;
+    [SerializeField] Vector3 rightFinalPunchPosition = Vector3.zero;
+    [SerializeField] Vector3 leftFinalPunchPosition = Vector3.zero;
 
     //References
     [Header("References")]
@@ -59,13 +61,34 @@ public class FistsController : MonoBehaviour
     IEnumerator PunchAnimation()
     {
         Transform currentFist = rightFist;
-        if(punchLeft)
+        Vector3 currrentPosition = rightFistOriginalPosition;
+        Vector3 punchPosition = rightFinalPunchPosition;
+
+        if (punchLeft)
+        {
             currentFist = leftFist;
+            currrentPosition = leftFistOriginalPosition;
+            punchPosition = leftFinalPunchPosition;
+        }
+
+        punchLeft = !punchLeft;
 
         float timeCounter = 0f;
         while (currentFist.localPosition != punchPosition) 
         {
-            currentFist.localPosition = Vector3.Lerp(currentFist.localPosition, punchPosition, timeCounter/punchSpeed);
+            float ratio = timeCounter / punchSpeed;
+            currentFist.localPosition = Vector3.Lerp(currrentPosition, punchPosition, ratio);
+            yield return 0;
+            timeCounter += Time.deltaTime;
+        }
+
+        yield return new WaitForSeconds(punchImpactDuration);
+
+        timeCounter = 0f;
+        while (currentFist.localPosition != currrentPosition)
+        {
+            float ratio = timeCounter / punchSpeed;
+            currentFist.localPosition = Vector3.Lerp(punchPosition, currrentPosition, ratio);
             yield return 0;
             timeCounter += Time.deltaTime;
         }
