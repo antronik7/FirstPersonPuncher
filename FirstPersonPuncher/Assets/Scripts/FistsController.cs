@@ -6,6 +6,7 @@ public class FistsController : MonoBehaviour
 {
     //Values
     [Header("Punch")]
+    [SerializeField] float punchForce = 1f;
     [SerializeField] float punchSpeed = 0.2f;
     [SerializeField] float punchImpactDuration = 0.2f;
     [SerializeField] float punchCooldown = 0.5f;
@@ -16,6 +17,11 @@ public class FistsController : MonoBehaviour
     [Header("References")]
     [SerializeField] Transform leftFist;
     [SerializeField] Transform rightFist;
+    [SerializeField] Transform characterOrientation;
+
+    //Components
+    private SphereCollider rightFistCol;
+    private SphereCollider leftFistCol;
 
     //Variables
     private bool punchLeft = true;
@@ -31,6 +37,8 @@ public class FistsController : MonoBehaviour
         rightFistOriginalPosition = rightFist.localPosition;
         leftFistOriginalRotation = leftFist.localRotation;
         rightFistOriginalRotation = rightFist.localRotation;
+        leftFistCol = leftFist.GetComponent<SphereCollider>();
+        rightFistCol = rightFist.GetComponent<SphereCollider>();
 }
 
     // Start is called before the first frame update
@@ -63,15 +71,19 @@ public class FistsController : MonoBehaviour
         Transform currentFist = rightFist;
         Vector3 currrentPosition = rightFistOriginalPosition;
         Vector3 punchPosition = rightFinalPunchPosition;
+        SphereCollider col = rightFistCol;
 
         if (punchLeft)
         {
             currentFist = leftFist;
             currrentPosition = leftFistOriginalPosition;
             punchPosition = leftFinalPunchPosition;
+            col = leftFistCol;
         }
 
         punchLeft = !punchLeft;
+
+        col.enabled = true;
 
         float timeCounter = 0f;
         while (currentFist.localPosition != punchPosition) 
@@ -82,6 +94,7 @@ public class FistsController : MonoBehaviour
             timeCounter += Time.deltaTime;
         }
 
+        col.enabled = false;
         yield return new WaitForSeconds(punchImpactDuration);
 
         timeCounter = 0f;
@@ -91,6 +104,15 @@ public class FistsController : MonoBehaviour
             currentFist.localPosition = Vector3.Lerp(punchPosition, currrentPosition, ratio);
             yield return 0;
             timeCounter += Time.deltaTime;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Rigidbody otherRb = other.GetComponent<Rigidbody>();
+        if (otherRb != null) 
+        {
+            otherRb.AddForceAtPosition(characterOrientation.forward * punchForce, other.ClosestPointOnBounds(transform.position));
         }
     }
 }
