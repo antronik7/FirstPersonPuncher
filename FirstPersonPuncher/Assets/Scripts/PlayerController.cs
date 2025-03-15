@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float movementSpeed = 1f;
     [SerializeField] int maxSlopeAngle = 60;
     [SerializeField] float maxSlopeSnapDistance = 1f;
+
+    [Header("Wall Run")]
+    [SerializeField] float wallMinAngle = 90f;
+    [SerializeField] float wallRunningGravity = -1f;
 
     [Header("Camera")]
     [SerializeField] float mouseHorizontalSensitivity = 1;
@@ -44,6 +49,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 groundNormal = Vector3.up;
     private float groundAngle = 0f;
     private Vector3 previousPosition = Vector3.zero;
+    private bool isWallRunning = false;
 
     private void Awake()
     {
@@ -140,6 +146,9 @@ public class PlayerController : MonoBehaviour
     {
         yVelocity += Physics.gravity.y * gravityScale * Time.fixedDeltaTime;
 
+        if (isWallRunning)
+            yVelocity = wallRunningGravity;
+
         if (isGrounded && yVelocity < 0f)
             yVelocity = 0f;
     }
@@ -194,5 +203,23 @@ public class PlayerController : MonoBehaviour
                 triggerJump = false;
             }
         }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (!isGrounded)
+        {
+            float wallAngle = Vector3.Angle(collision.contacts[0].normal, Vector3.up);
+            if (wallAngle >= wallMinAngle)
+                isWallRunning = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (isWallRunning)
+            isWallRunning = false;
+
+        Debug.Log("Exit");
     }
 }
